@@ -6,10 +6,11 @@ A mongoose plugin for the materialized paths.
 * [Usage](#usage)
 * [Examples](#examples)
 * [API](#api)
+  * [Instructions](#instructions)
   * [Attributes](#attributes)
   * [Static methods](#static-methods)
   * [Methods](#methods)
-* [Development](#development)
+* [Related Links](#related-links)
 * [Changelog](#changelog)
 * [Authors](#authors)
 
@@ -105,12 +106,100 @@ Cat.toTree(docsArray, function(err, tree){
 
 ### API
 
+#### Instructions
 
+The following methods must be used with a callback. The callback method have two arguments. The first error and the second data object.
+If all goes well then the error is null.
+```javascript
+model.calledFunction( function (error, data) {
+    if (error)
+        // handle error
+});
+```
+
+The methods with work callback return promise. (Mongoose Promise)[https://npmjs.org/package/mpromise]
+
+To run the tests:
+
+```
+npm test
+```
 
 #### Attributes
 Added attributes:
 
 * parentId: Parent item ID
+
 * path: materialized path
+
 * _w: weight for sort
+
 * depth: (virtual) element depth
+
+#### Static methods
+
+Similar method has the static begins with the first letter capitalized. (IsLeaft is static and isLeaf non static)
+
+* getChilds(ModelOrId, callback)
+
+* getRoots(callback)
+
+* toTree(docArray, callback) - under development
+
+* IsLeaf(ModelOrId, callback)
+
+* IsRoot(ModelOrId, callback)
+
+* building(callback) - rebuild material path (good for extisting collections - parentId is needed)
+
+#### Methods
+
+* isRoot(callback)
+
+* isLeaf(callback)
+
+* isDescendant(callback)
+
+* isParent(ModelOrId, callback)
+
+* isSibling(ModelOrID, callback)
+
+* getParent(callback)
+
+* getDescendants(callback)
+
+* getAncestors(callback)
+
+* getSiblings(callback)
+
+* appendChild(model, callback)
+
+* getChildCondition()
+
+* getAncestorsCondition()
+
+* getSiblingsCondition()
+
+* setParent(ModelOrId) - if parameter is ID then check parent existence and set parentId (the model parameter to avoid the query)
+
+### Related Links
+
+Inspired by seamless data management.
+
+* [MongoDB Model Tree Structures with Materialized Paths](http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-materialized-paths/)
+* [Inspired by mongoose nested set By groupdock](https://github.com/groupdock/mongoose-nested-set)
+* [MongooseJS Doc](http://mongoosejs.com/)
+
+### Changelog
+
+#### Jun 10, 2013 - version: 0.1.0
+* currently under construction
+* added test
+* static methods
+* before save verifies the existence of parent element
+* added Travis CI build status
+* updated README.md
+
+### authors
+
+* Janos Meszaros: [https://github.com/janez89](https://github.com/janez89)
