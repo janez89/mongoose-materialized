@@ -14,6 +14,8 @@ A mongoose plugin for the materialized paths.
 * [Changelog](#changelog)
 * [Authors](#authors)
 
+---
+
 ### Usage
 
 ```javascript
@@ -34,6 +36,8 @@ var Cat= mongoose.model('Cat', CatSchema); // Category
 ```
 
 [Go to contents](#overview)
+
+---
 
 ### Examples
 
@@ -107,6 +111,9 @@ Cat.toTree(docsArray, function(err, tree){
 ```
 
 [Go to contents](#overview)
+
+---
+
 ### API
 
 #### Instructions
@@ -130,6 +137,8 @@ npm test
 
 [Go to contents](#overview)
 
+---
+
 #### Attributes
 Added attributes:
 
@@ -139,6 +148,8 @@ Added attributes:
 * depth: (virtual) element depth
 
 [Go to contents](#overview)
+
+---
 
 #### Static methods
 
@@ -152,6 +163,8 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * building(callback) - rebuild material path (good for extisting collections - parentId is needed)
 
 [Go to contents](#overview)
+
+---
 
 #### Methods
 
@@ -172,6 +185,8 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 
 [Go to contents](#overview)
 
+---
+
 ### Related Links
 
 Inspired by seamless data management.
@@ -181,6 +196,8 @@ Inspired by seamless data management.
 * [MongooseJS Doc](http://mongoosejs.com/)
 
 [Go to contents](#overview)
+
+---
 
 ### Changelog
 
@@ -193,6 +210,8 @@ Inspired by seamless data management.
 * updated README.md
 
 [Go to contents](#overview)
+
+---
 
 ### authors
 
