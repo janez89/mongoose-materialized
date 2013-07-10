@@ -1,5 +1,6 @@
 var util = require('util')
   , assert = require('assert')
+  , should = require('should')
   , db = require('mongoose')
   , materialized = require('../lib/materialized')
   , Schema = db.Schema
@@ -78,6 +79,14 @@ describe('Matarialized test', function() {
         assert.strictEqual(doc.path, ','+ RootId +','+ lvl1Id)
         assert.strictEqual(doc.depth, 2)
         lvl2Id = doc._id
+        done()
+      })
+    })
+
+    it('sholud insert element for non exsitsing parent', function(done) {
+      var instance = new TreeModel({ name: 'child element without parent', count: 6, parentId: db.Types.ObjectId() })
+      instance.save(function(err, doc) {
+        assert.notEqual(err, null)
         done()
       })
     })
