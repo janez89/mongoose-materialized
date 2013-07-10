@@ -12,7 +12,6 @@ A mongoose plugin for the materialized paths.
 * [Development](#development)
 * [Changelog](#changelog)
 * [Authors](#authors)
-* [Sponsor](#sponsor)
 
 ### Usage
 
