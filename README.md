@@ -33,6 +33,8 @@ UserSchema.plugin(materializedPlugin);
 var Cat= mongoose.model('Cat', CatSchema); // Category
 ```
 
+[Go to contents](#overview)
+
 ### Examples
 
 Adding root and child element.
@@ -104,6 +106,7 @@ Cat.toTree(docsArray, function(err, tree){
 });
 ```
 
+[Go to contents](#overview)
 ### API
 
 #### Instructions
@@ -125,62 +128,49 @@ To run the tests:
 npm test
 ```
 
+[Go to contents](#overview)
+
 #### Attributes
 Added attributes:
 
 * parentId: Parent item ID
-
 * path: materialized path
-
 * _w: weight for sort
-
 * depth: (virtual) element depth
+
+[Go to contents](#overview)
 
 #### Static methods
 
 Similar method has the static begins with the first letter capitalized. (IsLeaft is static and isLeaf non static)
 
 * getChilds(ModelOrId, callback)
-
 * getRoots(callback)
-
 * toTree(docArray, callback) - under development
-
 * IsLeaf(ModelOrId, callback)
-
 * IsRoot(ModelOrId, callback)
-
 * building(callback) - rebuild material path (good for extisting collections - parentId is needed)
+
+[Go to contents](#overview)
 
 #### Methods
 
 * isRoot(callback)
-
 * isLeaf(callback)
-
 * isDescendant(callback)
-
 * isParent(ModelOrId, callback)
-
 * isSibling(ModelOrID, callback)
-
 * getParent(callback)
-
 * getDescendants(callback)
-
 * getAncestors(callback)
-
 * getSiblings(callback)
-
 * appendChild(model, callback)
-
 * getChildCondition()
-
 * getAncestorsCondition()
-
 * getSiblingsCondition()
-
 * setParent(ModelOrId) - if parameter is ID then check parent existence and set parentId (the model parameter to avoid the query)
+
+[Go to contents](#overview)
 
 ### Related Links
 
@@ -189,6 +179,8 @@ Inspired by seamless data management.
 * [MongoDB Model Tree Structures with Materialized Paths](http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-materialized-paths/)
 * [Inspired by mongoose nested set By groupdock](https://github.com/groupdock/mongoose-nested-set)
 * [MongooseJS Doc](http://mongoosejs.com/)
+
+[Go to contents](#overview)
 
 ### Changelog
 
@@ -200,6 +192,10 @@ Inspired by seamless data management.
 * added Travis CI build status
 * updated README.md
 
+[Go to contents](#overview)
+
 ### authors
 
 * Janos Meszaros: [https://github.com/janez89](https://github.com/janez89)
+
+[Go to contents](#overview)
