@@ -30,7 +30,7 @@ var CatSchema = new Schema({
 });
 
 
-UserSchema.plugin(materializedPlugin);
+CatSchema.plugin(materializedPlugin);
 
 var Cat= mongoose.model('Cat', CatSchema); // Category
 ```
@@ -127,7 +127,7 @@ model.calledFunction( function (error, data) {
 });
 ```
 
-The methods with work callback return promise. (Mongoose Promise)[https://npmjs.org/package/mpromise]
+The methods with work callback return promise. [Mongoose Promise](https://npmjs.org/package/mpromise)
 
 To run the tests:
 
