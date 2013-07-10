@@ -20,7 +20,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "make test && make clean"
+    "test": "mocha -R spec"
   },
   "keywords": [
     "mongoose",
