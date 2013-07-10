@@ -10,12 +10,12 @@
   "main": "index.js",
   "engine": "node >= 0.6.0",
   "dependencies": {
-	"async": "~0.2.9",
+    "async": "~0.2.9",
     "mongoose": "~3.6.0"
   },
   "devDependencies": {
-      "mocha": "~1.8.2",
-      "should": ""
+    "mocha": "~1.8.2",
+    "should": ""
   },
   "directories": {
     "test": "test"
@@ -26,13 +26,14 @@
   "keywords": [
     "mongoose",
     "materialized",
-	"hierarchic",
+    "hierarchic",
+    "nested",
     "tree",
-	"path",
+    "path",
     "mongodb"
   ],
   "author" : {
-    "name" : "Janos Meszaros",
+    "name" : "Janos Meszaros (Janez89)",
     "email" : "m.janee@gmail.com",
     "url" : "https://github.com/janez89/"
   },

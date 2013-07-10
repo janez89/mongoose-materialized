@@ -1,1 +1,0 @@
-mocha --reporter spec
