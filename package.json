@@ -14,7 +14,8 @@
     "mongoose": "~3.6.0"
   },
   "devDependencies": {
-      "mocha": "~1.8.2"
+      "mocha": "~1.8.2",
+      "should": ""
   },
   "directories": {
     "test": "test"
