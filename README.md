@@ -155,12 +155,13 @@ Added attributes:
 
 Similar method has the static begins with the first letter capitalized. (IsLeaft is static and isLeaf non static)
 
-* getChilds(ModelOrId, callback)
-* getRoots(callback)
-* toTree(docArray, callback) - under development
+* GetChilds(ModelOrId, callback)
+* GetRoots(callback)
+* AddChild(ModelOrId, callback)
+* ToTree(docArray, callback) - under development
 * IsLeaf(ModelOrId, callback)
 * IsRoot(ModelOrId, callback)
-* building(callback) - rebuild material path (good for extisting collections - parentId is needed)
+* Building(callback) - rebuild material path (good for extisting collections - parentId is needed)
 
 [Go to contents](#overview)
 
@@ -175,6 +176,7 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * isSibling(ModelOrID, callback)
 * getParent(callback)
 * getDescendants(callback)
+* getChilds(callback) alias for getDescendants
 * getAncestors(callback)
 * getSiblings(callback)
 * appendChild(model, callback)
