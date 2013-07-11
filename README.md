@@ -129,6 +129,28 @@ model.calledFunction( function (error, data) {
 
 The methods with work callback return promise. [Mongoose Promise](https://npmjs.org/package/mpromise)
 
+The my ```query``` object is special object for mongo query. This parameter available for functions.
+```javascript
+var query = {
+    // mongo condition
+    condition: {
+        name: /^a/
+    },
+    // selected fields
+    fields: {
+        _id: 1,
+        name: 1
+    },
+    // sorting
+    sort: {
+        name: -1
+    }
+};
+
+// Example get chidls with query
+doc.getChilds(query, function(err, docs){ ... });
+```
+
 To run the tests:
 
 ```
@@ -155,8 +177,8 @@ Added attributes:
 
 Similar method has the static begins with the first letter capitalized. (IsLeaft is static and isLeaf non static)
 
-* GetChilds(ModelOrId, callback)
-* GetRoots(callback)
+* GetChilds(ModelOrId, [query,] callback)
+* GetRoots([query,] callback)
 * AddChild(ModelOrId, callback)
 * ToTree(docArray, callback) - under development
 * IsLeaf(ModelOrId, callback)
@@ -175,10 +197,10 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * isParent(ModelOrId, callback)
 * isSibling(ModelOrID, callback)
 * getParent(callback)
-* getDescendants(callback)
-* getChilds(callback) alias for getDescendants
-* getAncestors(callback)
-* getSiblings(callback)
+* getDescendants([query,] callback)
+* getChilds([query,] callback) alias for getDescendants
+* getAncestors([query,] callback)
+* getSiblings([query,] callback)
 * appendChild(model, callback)
 * getChildCondition()
 * getAncestorsCondition()
