@@ -1,4 +1,5 @@
-# Mongoose Materialized [![Build Status](https://travis-ci.org/janez89/mongoose-materialized.png?branch=master)](https://travis-ci.org/janez89/mongoose-materialized)
+# Mongoose Materialized
+[![Build Status](https://travis-ci.org/janez89/mongoose-materialized.png?branch=master)](https://travis-ci.org/janez89/mongoose-materialized)
 
 A mongoose plugin for the materialized paths.
 
@@ -67,8 +68,16 @@ cat.save(function(err, foods){
 Find element and checking the relationship
 ```javascript
 Cat.findOne({parentId: null}, function(err, doc){
-    // access to the descendants
-    doc.getDescendants(function(err, docs){
+    // access to the children
+    doc.getChildren(function(err, docs){
+        // ...
+    });
+
+    // access to the children with condition and sort
+    doc.getChildren({
+        condition: { name: /^a/ },
+        sort: { name: 1 }
+    },function(err, docs){
         // ...
     });
 
@@ -88,26 +97,35 @@ Cat.findOne({parentId: null}, function(err, doc){
     // check element is leaf
     doc.isLeaf(function(err, isLeaf){ ... });
 
-    // depth
+    // depth virtual attributes
     doc.depth
+
+    // use promise
+    doc.getChildren()
+    .then(function(err, docs){
+        // ...
+    });
 });
 ```
 
 Manipulate child element with static method
 mongoose-materialized it is possible to use more than one root.
 ```javascript
-Cat.addChild('ID', { 'name': 'Meats'}, function(err, doc){ ... });
+Cat.AppendChild('ID', { 'name': 'Meats'}, function(err, doc){ ... });
 Cat.getChilds('ID', function(err, childs){ ... });
 Cat.getRoots(function(err, roots){
     // root elements
 });
-Cat.getRootWithChilds('Root ID', function(err, elements){
-    // root and child elements
+
+// Format tree, sub element stored in children field
+Cat.getRoots({ name: "" }).then(function (err, root) {
+    root.getChildren().then(function (err, children) {
+        console.log( Cat.toTree(children) );
+        // or only shown name
+        console.log( Cat.toTree(children, { name: 1 }) );
+    });
 });
-// Format tree, sub element stored in childs field
-Cat.toTree(docsArray, function(err, tree){
-    // { name: '...', chidls: [ { name: '...', childs: [] } ] }
-});
+
 ```
 
 [Go to contents](#overview)
