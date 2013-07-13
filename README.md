@@ -164,8 +164,8 @@ npm test
 #### Attributes
 Added attributes:
 
-* parentId: Parent item ID
-* path: materialized path
+* parentId: Parent item id.
+* path: materialized path. Auto generated
 * _w: weight for sort
 * depth: (virtual) element depth
 
@@ -177,12 +177,14 @@ Added attributes:
 
 Similar method has the static begins with the first letter capitalized. (IsLeaft is static and isLeaf non static)
 
-* GetChilds(ModelOrId, [query,] callback)
-* GetRoots([query,] callback)
-* AddChild(ModelOrId, callback)
-* ToTree(docArray, callback) - under development
 * IsLeaf(ModelOrId, callback)
 * IsRoot(ModelOrId, callback)
+
+* GetChildren(ModelOrId, [query,] callback)
+* GetRoots([query,] callback)
+
+* AppendChild(ModelOrId, callback)
+* ToTree(documentArray, selected fields) // fields: { name: 1, _id: 1 }
 * Building(callback) - rebuild material path (good for extisting collections - parentId is needed)
 
 [Go to contents](#overview)
@@ -196,16 +198,19 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * isDescendant(callback)
 * isParent(ModelOrId, callback)
 * isSibling(ModelOrID, callback)
+
 * getParent(callback)
 * getDescendants([query,] callback)
-* getChilds([query,] callback) alias for getDescendants
+* getChildren([query,] callback) alias for getDescendants
 * getAncestors([query,] callback)
 * getSiblings([query,] callback)
+
 * appendChild(model, callback)
+* setParent(ModelOrId) - if parameter is ID then check parent existence and set parentId (the model parameter to avoid the query)
+
 * getChildCondition()
 * getAncestorsCondition()
 * getSiblingsCondition()
-* setParent(ModelOrId) - if parameter is ID then check parent existence and set parentId (the model parameter to avoid the query)
 
 [Go to contents](#overview)
 
@@ -216,7 +221,7 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 Inspired by seamless data management.
 
 * [MongoDB Model Tree Structures with Materialized Paths](http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-materialized-paths/)
-* [Inspired by mongoose nested set By groupdock](https://github.com/groupdock/mongoose-nested-set)
+* [Inspired by mongoose nested set](https://github.com/groupdock/mongoose-nested-set) By @groupdock
 * [MongooseJS Doc](http://mongoosejs.com/)
 
 [Go to contents](#overview)
@@ -230,6 +235,7 @@ Inspired by seamless data management.
 * added test
 * static methods
 * before save verifies the existence of parent element
+* Query supported methods
 * added Travis CI build status
 * updated README.md
 
