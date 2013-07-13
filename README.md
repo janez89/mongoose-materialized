@@ -1,4 +1,4 @@
-# Mongoose Materialized [![Build Status](https://travis-ci.org/janez89/mongoose-materialized.png?branch=dev)](https://travis-ci.org/janez89/mongoose-materialized)
+# Mongoose Materialized [![Build Status](https://travis-ci.org/janez89/mongoose-materialized.png?branch=master)](https://travis-ci.org/janez89/mongoose-materialized)
 
 A mongoose plugin for the materialized paths.
 
