@@ -101,8 +101,7 @@ Cat.findOne({parentId: null}, function(err, doc){
     doc.depth
 
     // use promise
-    doc.getChildren()
-    .then(function(err, docs){
+    doc.getChildren().then(function(docs){
         // ...
     });
 });
@@ -146,6 +145,14 @@ model.calledFunction( function (error, data) {
 ```
 
 The methods with work callback return promise. [Mongoose Promise](https://npmjs.org/package/mpromise)
+
+```javascript
+model.calledFunction().then( function (data) {
+
+}, function (err) {
+    // handle error
+});
+```
 
 The my ```query``` object is special object for mongo query. This parameter available for functions.
 ```javascript
