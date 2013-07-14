@@ -248,6 +248,12 @@ Inspired by seamless data management.
 
 ### Changelog
 
+#### Jun 14, 213 - version: 0.1.1
+* added ToTree test
+* tempory removed Building static method (thown not implemented error if use)
+* fixed: ToTree now return json document. (Not mongoose document)
+* updated README.md
+
 #### Jun 10, 2013 - version: 0.1.0
 * currently under construction
 * added test
