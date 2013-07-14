@@ -202,8 +202,8 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * GetRoots([query,] callback)
 
 * AppendChild(ModelOrId, callback)
-* ToTree(documentArray, selected fields) // fields: { name: 1, _id: 1 }
-* Building(callback) - rebuild material path (good for extisting collections - parentId is needed)
+* ToTree(documentArray, selected fields) Return object, no mongoose document (toObject()). Fields: { name: 1, _id: 1 }
+* under development! - Building(callback) - rebuild material path (good for extisting collections - parentId is needed)
 
 [Go to contents](#overview)
 
