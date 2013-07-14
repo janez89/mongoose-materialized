@@ -22,7 +22,7 @@ describe('Matarialized test', function() {
   describe('#insert', function() {
 
     it('should insert main element, without parentId', function (done) {
-      var instance = new TreeModel({ name: 'Main element', count: 0, parentId: null })
+      var instance = new TreeModel({ name: '#0, parent: null, lvl: 0', count: 0, parentId: null })
       instance.save(function(err, doc) {
         RootId = doc._id
         assert.strictEqual(err, null)
@@ -34,7 +34,7 @@ describe('Matarialized test', function() {
     })
 
     it('should insert 1 level 1st child element', function (done) {
-      var instance = new TreeModel({ name: 'child element', count: 1, parentId: RootId })
+      var instance = new TreeModel({ name: '#1, parent: #0, lvl: 1', count: 1, parentId: RootId })
       instance.save(function(err, doc) {
         assert.strictEqual(err, null)
         assert.strictEqual(doc.count, 1)
@@ -47,7 +47,7 @@ describe('Matarialized test', function() {
     })
 
     it('should insert 1 level 2nd child element', function (done) {
-      var instance = new TreeModel({ name: 'child element', count: 5, parentId: RootId })
+      var instance = new TreeModel({ name: '#2, parent: #0, lvl: 1', count: 5, parentId: RootId })
       instance.save(function(err, doc) {
         assert.strictEqual(err, null)
         assert.strictEqual(doc.count, 5)
@@ -59,7 +59,7 @@ describe('Matarialized test', function() {
     })
 
     it('should insert 2 level 1st child element', function (done) {
-      var instance = new TreeModel({ name: 'child element', count: 3, parentId: lvl1Id })
+      var instance = new TreeModel({ name: '#3, parent: #1, lvl: 2', count: 3, parentId: lvl1Id })
       instance.save(function(err, doc) {
         assert.strictEqual(err, null)
         assert.strictEqual(doc.count, 3)
@@ -71,7 +71,7 @@ describe('Matarialized test', function() {
     })
 
     it('should insert 2 level 2nd child element', function (done) {
-      var instance = new TreeModel({ name: 'child element', count: 2, parentId: lvl1Id })
+      var instance = new TreeModel({ name: '#4, parent: #1, lvl: 2', count: 2, parentId: lvl1Id })
       instance.save(function(err, doc) {
         assert.strictEqual(err, null)
         assert.strictEqual(doc.count, 2)
@@ -148,6 +148,25 @@ describe('Matarialized test', function() {
             assert.strictEqual(parents.length, 2)
             done()
           })
+        })
+    })
+
+    it('should get tree', function (done) {
+        TreeModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getChildren(function (err, childs) {
+                assert.strictEqual(err, null)
+                assert.notStrictEqual(childs.length, 0)
+
+                var tree = TreeModel.ToTree(childs)
+                assert.strictEqual(Object.keys(tree).length, 2)
+                for(var i in tree){
+                    if (tree[i].name === '#1, parent: #0, lvl: 1') {
+                        assert.strictEqual(Object.keys(tree[i].children).length, 2)
+                    }
+                }
+                done()
+            })
         })
     })
 
