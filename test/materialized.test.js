@@ -241,7 +241,7 @@ describe('Matarialized test', function() {
 
   })
 
-  describe('#clean', function(){
+  describe('#clean', function() {
 
     it('sholud remove #1 item', function (done) {
         TreeModel.findById(lvl1Id, function(err, doc){
