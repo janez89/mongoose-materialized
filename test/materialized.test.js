@@ -17,6 +17,7 @@ describe('Matarialized test', function() {
 
     var RootId = null,
         lvl1Id = null,
+        lvl1Id2= null,
         lvl2Id = null
 
   describe('#insert', function() {
@@ -54,6 +55,7 @@ describe('Matarialized test', function() {
         assert.strictEqual(doc.parentId, RootId)
         assert.strictEqual(doc.path, ','+ RootId)
         assert.strictEqual(doc.depth, 1)
+        lvl1Id2 = doc._id;
         done()
       })
     })
@@ -128,6 +130,17 @@ describe('Matarialized test', function() {
       })
     })
 
+    it('should query getChildren with promise', function(done){
+      TreeModel.findOne({parentId: null}).exec(function(err, rdoc){
+        assert.equal(err, null)
+        rdoc.getChildren().then(function(docs){
+          assert.strictEqual(docs.length, 4)
+          assert.strictEqual(docs[0].parentId.toString(), rdoc._id.toString())
+          done()
+        })
+      })
+    })
+
     it('should query sub getDescendants', function(done){
       TreeModel.findOne({_id: lvl1Id}).exec(function(err, rdoc){
         assert.equal(err, null)
@@ -151,6 +164,34 @@ describe('Matarialized test', function() {
         })
     })
 
+    it('should get children static', function (done) {
+        TreeModel.GetChildren(RootId, function (err, children) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(children.length, 4)
+            done()
+        });
+    })
+
+    it('should get children static with condition', function (done) {
+        TreeModel.GetChildren(RootId, {
+            condition: { count: 1 }
+        }, function (err, children) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(children.length, 1)
+            assert.strictEqual(children[0].count, 1)
+            done()
+        });
+    })
+
+    it('should get roots', function (done) {
+        TreeModel.GetRoots(function (err, roots) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(roots.length, 1)
+            assert.strictEqual(roots[0].parentId, null)
+            done()
+        });
+    })
+
     it('should get tree', function (done) {
         TreeModel.findOne({ parentId: null}, function(err, root) {
             assert.strictEqual(err, null)
@@ -170,9 +211,51 @@ describe('Matarialized test', function() {
         })
     })
 
+    it('should get tree with root', function (done) {
+        TreeModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getTree(function (err, tree) {
+                assert.strictEqual(err, null)
+                assert.strictEqual(tree[root._id.toString()].name, root.name)
+                assert.strictEqual(tree[root._id.toString()].parentId, null)
+                var childKeys = Object.keys(tree[root._id.toString()].children)
+                assert.strictEqual(childKeys.length, 2)
+                assert.strictEqual(tree[root._id.toString()].children[lvl1Id]._id.toString(), lvl1Id.toString()) // 1st child
+                assert.strictEqual(tree[root._id.toString()].children[lvl1Id2]._id.toString(), lvl1Id2.toString()) // 2nd child
+                done()
+            })
+        })
+    })
+
+    it('should get tree with root static', function (done) {
+        TreeModel.GetTree({parentId: null}, function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[RootId.toString()].parentId, null)
+            var childKeys = Object.keys(tree[RootId.toString()].children)
+            assert.strictEqual(childKeys.length, 2)
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id]._id.toString(), lvl1Id.toString()) // 1st child
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id2]._id.toString(), lvl1Id2.toString()) // 2nd child
+            done()
+        })
+    })
+
   })
 
   describe('#clean', function(){
+
+    it('sholud remove #1 item', function (done) {
+        TreeModel.findById(lvl1Id, function(err, doc){
+            assert.equal(err, null)
+            TreeModel.Remove({_id: lvl1Id}, function (err) {
+                assert.equal(err, null)
+                TreeModel.findOne({parentId: lvl1Id}).exec(function (err, child) {
+                  assert.strictEqual(err, null)
+                  assert.strictEqual(child, null)
+                  done()
+                })
+            })
+        })
+    })
 
     it('should drop database', function(done){
       db.connection.db.executeDbCommand({
