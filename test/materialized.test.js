@@ -239,6 +239,18 @@ describe('Matarialized test', function() {
         })
     })
 
+    it('should get full tree', function (done) {
+        TreeModel.GetFullTree(function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[RootId.toString()].parentId, null)
+            var childKeys = Object.keys(tree[RootId.toString()].children)
+            assert.strictEqual(childKeys.length, 2)
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id]._id.toString(), lvl1Id.toString()) // 1st child
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id2]._id.toString(), lvl1Id2.toString()) // 2nd child
+            done()
+        })
+    })
+
   })
 
   describe('#building', function () {

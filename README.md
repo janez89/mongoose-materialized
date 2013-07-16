@@ -135,14 +135,17 @@ Cat.GetTree('elemt ID', {
 }, function (err, tree) {
     // ...
 });
+// access for full tree
+Cat.GetFullTree(function (err, tree) {
 
+});
 ```
 
 Manipulate child element with static method
 mongoose-materialized it is possible to use more than one root.
 ```javascript
 Cat.AppendChild('ID', { 'name': 'Meats'}, function(err, doc){ ... });
-Cat.getChilds('ID', function(err, childs){ ... });
+Cat.getChildren('ID', function(err, childs){ ... });
 Cat.getRoots(function(err, roots){
     // root elements
 });
@@ -156,6 +159,23 @@ Cat.getRoots({ name: "" }).then(function (err, root) {
     });
 });
 
+```
+
+Hierarchical builder for the existing data.
+**Important**: This operation is relatively slow. Use only the conversion.
+
+```javascript
+Cat.Building(function(){
+    // builded materialized path sturcture
+});
+
+// This example convert nested set to materialized path. Use this function to migration.
+
+Cat.Building({
+    remove: { lt: 1, gt: 1, children: 1 } // remove nested fields from existsing data
+}, function(){
+    // building is competted
+});
 ```
 
 [Go to contents](#overview)
@@ -257,12 +277,13 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * GetChildren(ModelOrId, [query,] callback)
 * GetRoots([query,] callback)
 * GetTree(root condition, [children query,] callback) - get elemets tree with children
+* GetFullTree(callback)
 
 * Remove(condition, callback) - use this instead of remove.
 
 * AppendChild(ModelOrId, callback)
 * ToTree(documentArray, selected fields) Return object, no mongoose document (toObject()). Fields: { name: 1, _id: 1 }
-* Building(callback) - rebuild material path (good for extisting collections - parentId is needed)
+* Building([prepare,] callback) - rebuild material path (good for extisting collections - parentId is needed)
 
 [Go to contents](#overview)
 
@@ -307,6 +328,11 @@ Inspired by seamless data management.
 ---
 
 ### Changelog
+
+### Jun 16, 2013 - version: 0.1.3
+* added **GetFullTree** static method
+* added prepare for Building - use: Building({ remove: { lt: 1, gt: 1, level: 1 }, function () { });
+* added GetFullTree test
 
 ### Jun 16, 2013 - version: 0.1.2
 * added **getTree** method and **GetTree** static method
