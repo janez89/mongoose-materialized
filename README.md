@@ -44,9 +44,15 @@ var Cat= mongoose.model('Cat', CatSchema); // Category
 
 Adding root and child element.
 
-Important: The model verifies the existence of the parent category before they would save.
-Except the root element.
+**Important**: The model verifies the existence of the parent category before they would save.
+Except for the root element or change the parent id not touch.
+
 ```javascript
+// if you have predefined datas with parent id
+Cat.Building(function(){
+    // building materialized path
+});
+
 // add root element
 cat = new Cat({name: "Foods"});
 cat.save(function(err, foods){
@@ -104,7 +110,32 @@ Cat.findOne({parentId: null}, function(err, doc){
     doc.getChildren().then(function(docs){
         // ...
     });
+
+    // get doc tree
+    doc.getTree(function(err, tree){
+        // ... { "doc ID": { ..., children: { ... } }
+    });
+
+    // or get tree with condition and sorting
+    doc.getTree({
+        condition: { name: /^[a-zA-Z]+$/ },
+        sort: { name: 1 }
+    }, function(err, tree){
+        // ...
+    });
 });
+
+Cat.GetTree('elemt ID', function (err, tree) {
+    // ...
+});
+
+// OR with sorting
+Cat.GetTree('elemt ID', {
+    sort: { name: 1 }
+}, function (err, tree) {
+    // ...
+});
+
 ```
 
 Manipulate child element with static method
@@ -153,6 +184,24 @@ model.calledFunction().then( function (data) {
     // handle error
 });
 ```
+
+**Imprtant!** Do not use the following methods:
+
+* Model.findByIdAndUpdate()
+* Model.findByOneAndUpdate()
+* Model.findByIdAndRemove()
+* Model.findByOneAndRemove()
+* Model.update() - static version
+* instance.update()
+* Model.remove() - static version
+
+These functions are not triggered by the removal and saving events.
+
+Instead, the following are recommended:
+
+* instance.save() - saving and update (before use findOne, findById)
+* instance.remove() - remove document (before use findOne, findById)
+* Model.Remove(condition, callback)
 
 The my ```query``` object is special object for mongo query. This parameter available for functions.
 ```javascript
@@ -207,10 +256,13 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 
 * GetChildren(ModelOrId, [query,] callback)
 * GetRoots([query,] callback)
+* GetTree(root condition, [children query,] callback) - get elemets tree with children
+
+* Remove(condition, callback) - use this instead of remove.
 
 * AppendChild(ModelOrId, callback)
 * ToTree(documentArray, selected fields) Return object, no mongoose document (toObject()). Fields: { name: 1, _id: 1 }
-* under development! - Building(callback) - rebuild material path (good for extisting collections - parentId is needed)
+* Building(callback) - rebuild material path (good for extisting collections - parentId is needed)
 
 [Go to contents](#overview)
 
@@ -229,6 +281,7 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * getChildren([query,] callback) alias for getDescendants
 * getAncestors([query,] callback)
 * getSiblings([query,] callback)
+* getTree([query,] callback) - get elemets tree with children
 
 * appendChild(model, callback)
 * setParent(ModelOrId) - if parameter is ID then check parent existence and set parentId (the model parameter to avoid the query)
@@ -255,7 +308,17 @@ Inspired by seamless data management.
 
 ### Changelog
 
-#### Jun 14, 213 - version: 0.1.1
+### Jun 16, 2013 - version: 0.1.2
+* added **getTree** method and **GetTree** static method
+* added **Remove** static method for remove with condition
+* fixed: getChildren now return promise
+* fixed: GetRoots function call
+* fixed: GetChildren function call
+* Building method already work
+* Building tests
+* updated README.md
+
+#### Jun 14, 2013 - version: 0.1.1
 * added ToTree test
 * tempory removed Building static method (thown not implemented error if use)
 * fixed: ToTree now return json document. (Not mongoose document)
