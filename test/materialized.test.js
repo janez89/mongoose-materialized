@@ -241,7 +241,55 @@ describe('Matarialized test', function() {
 
   })
 
-  describe('#clean', function() {
+  describe('#building', function () {
+      var simpleSchema = new Schema({
+          name: 'string',
+          parentId: 'ObjectId'
+      })
+      var Simple = db.model('simple', simpleSchema, 'simple')
+
+      var main = new Simple({name: "#0", parentId: null })
+      it('should populate collection for building', function (done) {
+          main.save(function (err, root) {
+              var child1 = new Simple({name: "#1", parentId: root._id })
+              child1.save(function (err1, ch1) {
+                  var child2 = new Simple({name: "#2", parentId: ch1._id })
+                  child2.save(function (err2, ch2) {
+                      var child3 = new Simple({name: "#3", parentId: ch1._id })
+                      child3.save(function(err3, ch3) {
+                          done()
+                      })
+                  })
+              })
+          })
+      })
+
+      var simple1Schema = new Schema({
+          name: 'string',
+          parentId: 'ObjectId'
+      })
+      simple1Schema.plugin(materialized)
+      var Simple1 = db.model('simple1', simple1Schema, 'simple')
+      it('should building hierarchic and check tree', function (done) {
+          Simple1.Building(function (){
+              Simple1.findOne({parentId: null}).exec(function (err, root) {
+                  assert.strictEqual(err, null)
+                  Simple1.findOne({parentId: root._id}).exec(function (err, doc) {
+                      assert.strictEqual(err, null)
+                      assert.strictEqual(doc.path, ','+ root._id)
+                      doc.getChildren(function (err, children) {
+                        assert.strictEqual(err, null)
+                        assert.strictEqual(children.length, 2)
+                        assert.strictEqual(children[0].path, doc.path +','+ doc._id.toString() )
+                        done()
+                      })
+                  })
+              })
+          })
+      })
+  })
+
+  describe('#clean', function () {
 
     it('sholud remove #1 item', function (done) {
         TreeModel.findById(lvl1Id, function(err, doc){
