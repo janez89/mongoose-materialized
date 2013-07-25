@@ -329,6 +329,10 @@ Inspired by seamless data management.
 
 ### Changelog
 
+### Jun 25, 2013 - version: 0.1.4
+* ToTree use virtuals
+* better depth solution
+
 ### Jun 16, 2013 - version: 0.1.3
 * added **GetFullTree** static method
 * added prepare for Building - use: Building({ remove: { lt: 1, gt: 1, level: 1 }, function () { });
