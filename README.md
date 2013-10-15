@@ -330,6 +330,9 @@ Inspired by seamless data management.
 
 ### Changelog
 
+### Oct 15, 2013 - version: 0.1.5
+* fixed typo in 153 line.
+
 ### Jun 25, 2013 - version: 0.1.4
 * ToTree use virtuals
 * better depth solution
