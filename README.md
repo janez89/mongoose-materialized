@@ -330,6 +330,11 @@ Inspired by seamless data management.
 
 ### Changelog
 
+### Dec 19, 2013 - version: 0.1.6
+* added requested function: skip, limit for getDescendants, getChildren, getAncestors, getSiblings
+* tree construction is not recommended for use
+
+
 ### Oct 15, 2013 - version: 0.1.5
 * fixed typo in 153 line.
 
