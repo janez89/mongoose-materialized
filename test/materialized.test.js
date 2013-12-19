@@ -130,6 +130,18 @@ describe('Matarialized test', function() {
       })
     })
 
+    it('should query getDescendants with pagination', function(done){
+      TreeModel.findOne({parentId: null}).exec(function(err, rdoc){
+        assert.equal(err, null)
+        rdoc.getDescendants({limit: 2, skip: 1},function(err, docs){
+          assert.strictEqual(err, null)
+          assert.strictEqual(docs.length, 2)
+          assert.strictEqual(docs[0].parentId.toString(), rdoc._id.toString())
+          done()
+        })
+      })
+    })
+
     it('should query getChildren with promise', function(done){
       TreeModel.findOne({parentId: null}).exec(function(err, rdoc){
         assert.equal(err, null)
