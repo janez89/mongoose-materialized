@@ -1,7 +1,7 @@
 {
   "name": "mongoose-materialized",
   "description": "Materialized path hierarchy for mongoose",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "homepage": "https://github.com/janez89/mongoose-materialized",
   "repository": {
     "type": "git",
