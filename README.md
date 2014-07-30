@@ -330,9 +330,14 @@ Inspired by seamless data management.
 
 ### Changelog
 
+### July 30, 2014 - version: 0.1.7
+* fixed remove parent with `parentId=null` bug
+* added new tests
+* updated README.md
+
 ### Dec 19, 2013 - version: 0.1.6
 * added requested function: skip, limit for getDescendants, getChildren, getAncestors, getSiblings
-* tree construction is not recommended for use
+* in tree construction (getTree, buildTree) skip, limit methods is not recommended for use
 
 
 ### Oct 15, 2013 - version: 0.1.5
