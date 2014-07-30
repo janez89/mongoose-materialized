@@ -313,6 +313,84 @@ describe('Matarialized test', function() {
       })
   })
 
+  describe('#tree-moving', function () {
+      var catSchema = new Schema({
+          name: 'string'
+      })
+      catSchema.plugin(materialized);
+      var Cat = db.model('cat2', catSchema, 'cat2')
+
+      var foodId = null,
+          vegaId = null,
+          tomatoId = null,
+          pepperId = null;
+
+      // ---------------------------------------------------------
+
+      it('sholud build simple category schema', function (done) {
+        var food = new Cat({name: "Foods"});
+        food.save(function (err, food) {
+          assert.strictEqual(err, null);
+          foodId = food._id;
+          
+          food.appendChild({"name":"Vegetables"}, function (err, vega) {
+            assert.strictEqual(err, null);
+            vegaId = vega._id;
+
+            var tomato = new Cat({"name": "Tomato"});
+            tomato.parentId = vegaId;
+            tomato.save(function (err, tomato) {
+              assert.strictEqual(err, null);
+              tomatoId = tomato._id;
+              vega.appendChild({name: "pepper"}, function (err, pepper) {
+                pepperId = pepper._id;
+                done();
+              });
+            });
+
+          });
+
+        });
+      });
+
+      it('sholud remove item parent', function (done) {
+        Cat.findById(vegaId, function (err, vega) {
+          vega.parentId = null;
+          vega.save(function (err, vega) {
+            assert.strictEqual(err, null);
+
+            Cat.findById(tomatoId, function (err, tomato) {
+              assert.strictEqual(tomato.path, ','+ vega._id.toString());
+
+              Cat.findById(pepperId, function (err, pepper) {
+                assert.strictEqual(pepper.path, ','+ vega._id.toString());
+                done();
+              });
+            });
+          });
+        });
+      });
+
+      it('sholud move root item to sub element', function (done) {
+        Cat.findById(vegaId, function (err, vega) {
+          vega.parentId = foodId;
+          vega.save(function (err, vega) {
+            assert.strictEqual(err, null);
+            assert.strictEqual(vega.parentId, foodId);
+
+            Cat.findById(tomatoId, function (err, tomato) {
+              assert.strictEqual(tomato.path, vega.path + ','+ vega._id.toString());
+
+              Cat.findById(pepperId, function (err, pepper) {
+                assert.strictEqual(pepper.path, vega.path + ','+ vega._id.toString());
+                done();
+              });
+            });
+          });
+        });
+      });
+  });
+
   describe('#clean', function () {
 
     it('sholud remove #1 item', function (done) {
