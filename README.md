@@ -112,6 +112,11 @@ Cat.findOne({parentId: null}, function(err, doc){
         // ...
     });
 
+    // get doc array tree
+    doc.getArrayTree(function(err, tree){
+        // ... [ {"_id": "...", "children": [ {...} ]}]
+    });
+
     // get doc tree
     doc.getTree(function(err, tree){
         // ... { "doc ID": { ..., children: { ... } }
@@ -130,16 +135,54 @@ Cat.GetTree('elemt ID', function (err, tree) {
     // ...
 });
 
-// OR with sorting
-Cat.GetTree('elemt ID', {
-    sort: { name: 1 }
-}, function (err, tree) {
+Cat.GetArrayTree('elemt ID', function (err, tree) {
     // ...
 });
-// access for full tree
+
+// access for full tree in array
+Cat.GetFullArrayTree(function (err, tree) {
+
+});
+
+// access for full tree object
 Cat.GetFullTree(function (err, tree) {
 
 });
+```
+
+The different arrayTree and simple Tree methods:
+arrayTree result: 
+```
+[ 
+    { _id: 53ee2db76f2d838a07a04e6a,
+    path: '',
+    name: 'Foods',
+    __v: 0,
+    _w: 0,
+    parentId: null,
+    depth: 0,
+    id: '53ee2db76f2d838a07a04e6a',
+    children: [ [Object], [Object] ] 
+    }
+]
+```
+
+and the Tree result: 
+```
+{ '53ee2db76f2d838a07a04e6a': 
+   { _id: 53ee2db76f2d838a07a04e6a,
+     path: '',
+     name: 'Foods',
+     __v: 0,
+     _w: 0,
+     parentId: null,
+     depth: 0,
+     id: '53ee2db76f2d838a07a04e6a',
+     children: { 
+        '53ee2db76f2d838a07a04e6b': [Object] 
+        } 
+    } 
+}
 ```
 
 Manipulate child element with static method
@@ -280,10 +323,14 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * GetTree(root condition, [children query,] callback) - get elemets tree with children
 * GetFullTree(callback)
 
+* **GetArrayTree**(root condition, [children query,] callback) - get elemets tree with children
+* **GetFullArrayTree**(callback)
+
 * Remove(condition, callback) - use this instead of remove.
 
 * AppendChild(ModelOrId, callback)
 * ToTree(documentArray, selected fields) Return object, no mongoose document (toObject()). Fields: { name: 1, _id: 1 }
+* ToArrayTree(documentArray, selected fields) Return objects in array, no mongoose document (toObject()). Fields: { name: 1, _id: 1 }
 * Building([prepare,] callback) - rebuild material path (good for extisting collections - parentId is needed)
 
 [Go to contents](#overview)
@@ -304,6 +351,7 @@ Similar method has the static begins with the first letter capitalized. (IsLeaft
 * getAncestors([query,] callback)
 * getSiblings([query,] callback)
 * getTree([query,] callback) - get elemets tree with children
+* **getArrayTree([query,] callback)** - get elemets tree with children, array version
 
 * appendChild(model, callback)
 * setParent(ModelOrId) - if parameter is ID then check parent existence and set parentId (the model parameter to avoid the query)
@@ -329,6 +377,13 @@ Inspired by seamless data management.
 ---
 
 ### Changelog
+
+### Aug 15, 2014 - version: 0.1.8
+* added new static methods: **ToArrayTree(), GetArrayTree(), GetFullArrayTree()**
+* added new methods: **getArrayTree()**
+* added new tests
+* enhancements (toTree, parentId type inherits from _id)
+* updated README.md and package dependencies
 
 ### July 30, 2014 - version: 0.1.7
 * fixed remove parent with `parentId=null` bug
