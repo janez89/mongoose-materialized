@@ -223,6 +223,25 @@ describe('Matarialized test', function() {
         })
     })
 
+    it('should get array tree', function (done) {
+        TreeModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getChildren(function (err, childs) {
+                assert.strictEqual(err, null)
+                assert.notStrictEqual(childs.length, 0)
+
+                var tree = TreeModel.ToArrayTree(childs)
+                assert.strictEqual(tree.length, 2)
+                for(var i in tree){
+                    if (tree[i].name === '#1, parent: #0, lvl: 1') {
+                        assert.strictEqual(tree[i].children.length, 2)
+                    }
+                }
+                done()
+            })
+        })
+    })
+
     it('should get tree with root', function (done) {
         TreeModel.findOne({ parentId: null}, function(err, root) {
             assert.strictEqual(err, null)
@@ -234,6 +253,22 @@ describe('Matarialized test', function() {
                 assert.strictEqual(childKeys.length, 2)
                 assert.strictEqual(tree[root._id.toString()].children[lvl1Id]._id.toString(), lvl1Id.toString()) // 1st child
                 assert.strictEqual(tree[root._id.toString()].children[lvl1Id2]._id.toString(), lvl1Id2.toString()) // 2nd child
+                done()
+            })
+        })
+    })
+
+    it('should get array tree with root', function (done) {
+        TreeModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getArrayTree(function (err, tree) {
+                assert.strictEqual(err, null)
+                assert.strictEqual(tree[0].name, root.name)
+                assert.strictEqual(tree[0].parentId, null)
+
+                assert.strictEqual(tree[0].children.length, 2)
+                assert.strictEqual(tree[0].children[0]._id.toString(), lvl1Id.toString()) // 1st child
+                assert.strictEqual(tree[0].children[1]._id.toString(), lvl1Id2.toString()) // 2nd child
                 done()
             })
         })
@@ -251,6 +286,19 @@ describe('Matarialized test', function() {
         })
     })
 
+    it('should get array tree with root static', function (done) {
+        TreeModel.GetArrayTree({parentId: null}, function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[0].parentId, null)
+            assert.strictEqual(tree[0].children.length, 2)
+
+            for(var i in tree[0].children) {
+              assert.strictEqual(tree[0].children[i].parentId.toString(), tree[0]._id.toString());
+            }
+            done()
+        })
+    })
+
     it('should get full tree', function (done) {
         TreeModel.GetFullTree(function (err, tree) {
             assert.strictEqual(err, null)
@@ -259,6 +307,19 @@ describe('Matarialized test', function() {
             assert.strictEqual(childKeys.length, 2)
             assert.strictEqual(tree[RootId.toString()].children[lvl1Id]._id.toString(), lvl1Id.toString()) // 1st child
             assert.strictEqual(tree[RootId.toString()].children[lvl1Id2]._id.toString(), lvl1Id2.toString()) // 2nd child
+            done()
+        })
+    })
+
+    it('should get full array tree', function (done) {
+        TreeModel.GetFullArrayTree(function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[0].parentId, null)
+            assert.strictEqual(tree[0].children.length, 2)
+
+            for(var i in tree[0].children) {
+              assert.strictEqual(tree[0].children[i].parentId.toString(), tree[0]._id.toString());
+            }
             done()
         })
     })
