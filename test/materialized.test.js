@@ -393,7 +393,7 @@ describe('Matarialized test', function() {
         food.save(function (err, food) {
           assert.strictEqual(err, null);
           foodId = food._id;
-          
+
           food.appendChild({"name":"Vegetables"}, function (err, vega) {
             assert.strictEqual(err, null);
             vegaId = vega._id;
@@ -479,9 +479,356 @@ describe('Matarialized test', function() {
 
   })
 
+})
+
+
+describe('Alternative tests', function() {
+
+  var novaSchema = new Schema({ id: 'number', name: 'string' });
+  novaSchema.plugin(materialized, {field: 'id'});
+  var NovaModel = db.model('nova', novaSchema, 'nova');
+
+  var RootId = null,
+      lvl1Id = null,
+      lvl1Id2= null,
+      lvl2Id = null;
+
+  describe('#insert', function() {
+
+    it('should insert main element, without parentId', function (done) {
+      var instance = new NovaModel({ id: 1, name: '#0, parent: null, lvl: 0', parentId: null })
+      instance.save(function(err, doc) {
+        RootId = doc.id
+        assert.strictEqual(err, null)
+        assert.strictEqual(doc.id, 1)
+        assert.strictEqual(doc.path, "")
+        assert.strictEqual(doc.parentId, null)
+        assert.strictEqual(doc.depth, 0)
+        done()
+      })
+    })
+
+    it('should insert 1 level 1st child element', function (done) {
+      var instance = new NovaModel({ id: 2, name: '#1, parent: #0, lvl: 1', parentId: RootId })
+      instance.save(function(err, doc) {
+        assert.strictEqual(err, null)
+        assert.strictEqual(doc.id, 2)
+        assert.strictEqual(doc.parentId, RootId)
+        assert.strictEqual(doc.path, ','+ RootId)
+        assert.strictEqual(doc.depth, 1)
+        lvl1Id = doc.id
+        done()
+      })
+    })
+
+    it('should insert 1 level 2nd child element', function (done) {
+      var instance = new NovaModel({ id: 3, name: '#2, parent: #0, lvl: 1', parentId: RootId })
+      instance.save(function(err, doc) {
+        assert.strictEqual(err, null)
+        assert.strictEqual(doc.id, 3)
+        assert.strictEqual(doc.parentId, RootId)
+        assert.strictEqual(doc.path, ','+ RootId)
+        assert.strictEqual(doc.depth, 1)
+        lvl1Id2 = doc.id;
+        done()
+      })
+    })
+
+    it('should insert 2 level 1st child element', function (done) {
+      var instance = new NovaModel({ id: 4, name: '#3, parent: #1, lvl: 2', parentId: lvl1Id })
+      instance.save(function(err, doc) {
+        assert.strictEqual(err, null)
+        assert.strictEqual(doc.id, 4)
+        assert.strictEqual(doc.parentId, lvl1Id)
+        assert.strictEqual(doc.path, ','+ RootId +','+ lvl1Id)
+        assert.strictEqual(doc.depth, 2);
+        done()
+      })
+    })
+
+    it('should insert 2 level 2nd child element', function (done) {
+      var instance = new NovaModel({ id: 5, name: '#4, parent: #1, lvl: 2', parentId: lvl1Id })
+      instance.save(function(err, doc) {
+        assert.strictEqual(err, null)
+        assert.strictEqual(doc.id, 5)
+        assert.strictEqual(doc.parentId, lvl1Id)
+        assert.strictEqual(doc.path, ','+ RootId +','+ lvl1Id)
+        assert.strictEqual(doc.depth, 2)
+        lvl2Id = doc.id
+        done()
+      })
+    })
+
+    it('sholud insert element for non exsitsing parent', function(done) {
+      var instance = new NovaModel({ id: 6, name: 'child element without parent', parentId: db.Types.ObjectId() })
+      instance.save(function(err, doc) {
+        assert.notEqual(err, null)
+        done()
+      })
+    })
+
+  })
+
+  describe('#query', function(){
+
+    it('should query root data', function(done){
+      NovaModel.findOne({parentId: null}).exec(function(err, doc){
+        assert.strictEqual(err, null)
+        assert.strictEqual(doc.id.toString(), RootId.toString())
+        assert.strictEqual(doc.depth, 0)
+        done()
+      });
+    })
+
+    it('should query getParent ', function(done){
+      NovaModel.findOne({id: lvl2Id}).exec(function(err, doc){
+        assert.strictEqual(err, null)
+        doc.getParent(function(err, doc2){
+          assert.strictEqual(err, null)
+          assert.strictEqual(doc2.id.toString(), doc.parentId.toString())
+          done()
+        })
+      })
+    })
+
+    it('should query getDescendants', function(done){
+      NovaModel.findOne({parentId: null}).exec(function(err, rdoc){
+        assert.equal(err, null)
+        rdoc.getDescendants(function(err, docs){
+          assert.strictEqual(err, null)
+          assert.strictEqual(docs.length, 4)
+          assert.strictEqual(docs[0].parentId.toString(), rdoc.id.toString())
+          done()
+        })
+      })
+    })
+
+    it('should query getDescendants with pagination', function(done){
+      NovaModel.findOne({parentId: null}).exec(function(err, rdoc){
+        assert.equal(err, null)
+        rdoc.getDescendants({limit: 2, skip: 1},function(err, docs){
+          assert.strictEqual(err, null)
+          assert.strictEqual(docs.length, 2)
+          assert.strictEqual(docs[0].parentId.toString(), rdoc.id.toString())
+          done()
+        })
+      })
+    })
+
+    it('should query getChildren with promise', function(done){
+      NovaModel.findOne({parentId: null}).exec(function(err, rdoc){
+        assert.equal(err, null)
+        rdoc.getChildren().then(function(docs){
+          assert.strictEqual(docs.length, 4)
+          assert.strictEqual(docs[0].parentId.toString(), rdoc.id.toString())
+          done()
+        })
+      })
+    })
+
+    it('should query sub getDescendants', function(done){
+      NovaModel.findOne({id: lvl1Id}).exec(function(err, rdoc){
+        assert.equal(err, null)
+        rdoc.getDescendants(function(err, docs){
+          assert.strictEqual(err, null)
+          assert.strictEqual(docs.length, 2)
+          assert.strictEqual(docs[0].parentId.toString(), rdoc.id.toString())
+          done()
+        })
+      })
+    })
+
+    it('should query getAncestors', function(done){
+      NovaModel.findOne({id: lvl2Id}).exec(function(err, doc){
+          assert.strictEqual(err, null)
+          doc.getAncestors(function(err, parents){
+            assert.strictEqual(err, null)
+            assert.strictEqual(parents.length, 2)
+            done()
+          })
+        })
+    })
+
+    it('should get children static', function (done) {
+      NovaModel.GetChildren(RootId, function (err, children) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(children.length, 4)
+            done()
+        });
+    })
+
+    it('should get children static with condition', function (done) {
+      NovaModel.GetChildren(RootId, {
+            condition: { id: 4 }
+        }, function (err, children) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(children.length, 1)
+            assert.strictEqual(children[0].name, '#3, parent: #1, lvl: 2')
+            done()
+        });
+    })
+
+    it('should get roots', function (done) {
+      NovaModel.GetRoots(function (err, roots) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(roots.length, 1)
+            assert.strictEqual(roots[0].parentId, null)
+            done()
+        });
+    })
+
+    it('should get tree', function (done) {
+      NovaModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getChildren(function (err, childs) {
+                assert.strictEqual(err, null)
+                assert.notStrictEqual(childs.length, 0)
+
+                var tree = NovaModel.ToTree(childs)
+                assert.strictEqual(Object.keys(tree).length, 2)
+                for(var i in tree){
+                    if (tree[i].name === '#1, parent: #0, lvl: 1') {
+                        assert.strictEqual(Object.keys(tree[i].children).length, 2)
+                    }
+                }
+                done()
+            })
+        })
+    })
+
+    it('should get array tree', function (done) {
+      NovaModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getChildren(function (err, childs) {
+                assert.strictEqual(err, null)
+                assert.notStrictEqual(childs.length, 0)
+
+                var tree = NovaModel.ToArrayTree(childs)
+                assert.strictEqual(tree.length, 2)
+                for(var i in tree){
+                    if (tree[i].name === '#1, parent: #0, lvl: 1') {
+                        assert.strictEqual(tree[i].children.length, 2)
+                    }
+                }
+                done()
+            })
+        })
+    })
+
+    it('should get tree with root', function (done) {
+      NovaModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getTree(function (err, tree) {
+                assert.strictEqual(err, null)
+                assert.strictEqual(tree[root.id.toString()].name, root.name)
+                assert.strictEqual(tree[root.id.toString()].parentId, null)
+                var childKeys = Object.keys(tree[root.id.toString()].children)
+                assert.strictEqual(childKeys.length, 2)
+                assert.strictEqual(tree[root.id.toString()].children[lvl1Id].id.toString(), lvl1Id.toString()) // 1st child
+                assert.strictEqual(tree[root.id.toString()].children[lvl1Id2].id.toString(), lvl1Id2.toString()) // 2nd child
+                done()
+            })
+        })
+    })
+
+    it('should get array tree with root', function (done) {
+      NovaModel.findOne({ parentId: null}, function(err, root) {
+            assert.strictEqual(err, null)
+            root.getArrayTree(function (err, tree) {
+                assert.strictEqual(err, null)
+                assert.strictEqual(tree[0].name, root.name)
+                assert.strictEqual(tree[0].parentId, null)
+
+                assert.strictEqual(tree[0].children.length, 2)
+                assert.strictEqual(tree[0].children[0].id.toString(), lvl1Id.toString()) // 1st child
+                assert.strictEqual(tree[0].children[1].id.toString(), lvl1Id2.toString()) // 2nd child
+                done()
+            })
+        })
+    })
+
+    it('should get tree with root static', function (done) {
+      NovaModel.GetTree({parentId: null}, function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[RootId.toString()].parentId, null)
+            var childKeys = Object.keys(tree[RootId.toString()].children)
+            assert.strictEqual(childKeys.length, 2)
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id].id.toString(), lvl1Id.toString()) // 1st child
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id2].id.toString(), lvl1Id2.toString()) // 2nd child
+            done()
+        })
+    })
+
+    it('should get array tree with root static', function (done) {
+      NovaModel.GetArrayTree({parentId: null}, function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[0].parentId, null)
+            assert.strictEqual(tree[0].children.length, 2)
+
+            for(var i in tree[0].children) {
+              assert.strictEqual(tree[0].children[i].parentId.toString(), tree[0].id.toString());
+            }
+            done()
+        })
+    })
+
+    it('should get full tree', function (done) {
+      NovaModel.GetFullTree(function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[RootId.toString()].parentId, null)
+            var childKeys = Object.keys(tree[RootId.toString()].children)
+            assert.strictEqual(childKeys.length, 2)
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id].id.toString(), lvl1Id.toString()) // 1st child
+            assert.strictEqual(tree[RootId.toString()].children[lvl1Id2].id.toString(), lvl1Id2.toString()) // 2nd child
+            done()
+        })
+    })
+
+    it('should get full array tree', function (done) {
+      NovaModel.GetFullArrayTree(function (err, tree) {
+            assert.strictEqual(err, null)
+            assert.strictEqual(tree[0].parentId, null)
+            assert.strictEqual(tree[0].children.length, 2)
+
+            for(var i in tree[0].children) {
+              assert.strictEqual(tree[0].children[i].parentId.toString(), tree[0].id.toString());
+            }
+            done()
+        })
+    })
+
+  })
+
+  describe('#clean', function () {
+
+    it('sholud remove #1 item', function (done) {
+      NovaModel.findOne({id: lvl1Id}, function(err, doc){
+            assert.equal(err, null)
+            NovaModel.Remove({id: lvl1Id}, function (err) {
+                assert.equal(err, null)
+                NovaModel.findOne({parentId: lvl1Id}).exec(function (err, child) {
+                  assert.strictEqual(err, null)
+                  assert.strictEqual(child, null)
+                  done()
+                })
+            })
+        })
+    })
+
+    it('should drop database', function(done){
+      db.connection.db.executeDbCommand({
+        dropDatabase: 1
+      }, function(err, result) {
+        assert.strictEqual(err, null)
+        done()
+      })
+    })
+
+  })
+
   after(function(done){
       db.disconnect()
       done()
   });
 
-})
+});
