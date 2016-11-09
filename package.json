@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "mocha": "~1.8.2",
-    "should": ""
+    "should": "~4.0.0"
   },
   "directories": {
     "test": "test"
