@@ -378,6 +378,10 @@ Inspired by seamless data management.
 
 ### Changelog
 
+### Nov 10, 2016 - version: 0.1.9
+* fixed MongoDB 3.2 limit issue. Thanks @alexjamesbrown
+* fixed dependency: should package
+
 ### Aug 15, 2014 - version: 0.1.8
 * added new static methods: **ToArrayTree(), GetArrayTree(), GetFullArrayTree()**
 * added new methods: **getArrayTree()**
