@@ -1,6 +1,7 @@
 var util = require('util')
   , assert = require('assert')
   , should = require('should')
+  , async = require('async')
   , db = require('mongoose')
   , materialized = require('../lib/materialized')
   , Schema = db.Schema
@@ -446,6 +447,76 @@ describe('Matarialized test', function() {
                 assert.strictEqual(pepper.path, vega.path + ','+ vega._id.toString());
                 done();
               });
+            });
+          });
+        });
+      });
+
+      it('should move item with all children', function (done) {
+        var data = {};
+        async.waterfall([
+          function(cb) {
+            TreeModel.create({ name: 'A' }, function(err, catA) {
+              data.catA = catA;
+              cb(err, catA);
+            });
+          },
+          function(catA, cb) {
+            TreeModel.create({ parentId: catA._id, name: 'A1' }, function(err, catA1) {
+              data.catA1 = catA1;
+              cb(err, catA1);
+            });
+          },
+          function(catA1, cb) {
+            TreeModel.create({ parentId: catA1._id, name: 'A2' }, function(err, catA2) {
+              data.catA2 = catA2;
+              cb(err, catA2);
+            });
+          },
+          function(catA2, cb) {
+            TreeModel.create({ parentId: catA2._id, name: 'A3' }, function(err, catA3) {
+              data.catA3 = catA3;
+              cb(err);
+            });
+          },
+          function(cb) {
+            TreeModel.create({ parentId: data.catA1._id, name: 'A2a' }, function(err, catA2a) {
+              data.catA2a = catA2a;
+              cb(err);
+            });
+          },
+          function(cb) {
+            TreeModel.create({ name: 'B' }, function(err, catB) {
+              data.catB = catB;
+              cb(err, data);
+            });
+          },
+        ], function (err, results) {
+          // move catA1 to B and check catA3
+          data.catA1.parentId = data.catB._id;
+          data.catA1.save(function(err, catA1) {
+            assert.strictEqual(catA1.parentId, data.catB._id);
+            async.parallel({
+              catA2: function(cb) {
+                TreeModel.findById(data.catA2._id, function(err, catA2) {
+                  cb(err, catA2);
+                });
+              },
+              catA2a: function(cb) {
+                TreeModel.findById(data.catA2a._id, function(err, catA2a) {
+                  cb(err, catA2a);
+                });
+              },
+              catA3: function(cb) {
+                TreeModel.findById(data.catA3._id, function(err, catA3) {
+                  cb(err, catA3);
+                });
+              }
+            }, function(err, getResults) {
+              assert.strictEqual(getResults.catA2.path, ','+data.catB._id+','+data.catA1._id);
+              assert.strictEqual(getResults.catA2a.path, ','+data.catB._id+','+data.catA1._id);
+              assert.strictEqual(getResults.catA3.path, ','+data.catB._id+','+data.catA1._id+','+data.catA2._id);
+              done();
             });
           });
         });
