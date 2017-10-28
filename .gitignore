@@ -38,6 +38,7 @@ node_modules
 publish
 .idea
 _dev
+package-lock.json
 
 # build script local files
 build/buildinfo.properties
