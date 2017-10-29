@@ -224,6 +224,47 @@ describe('Matarialized test', function() {
         })
     })
 
+    it('should get tree, respect sorting (_w)', function (done) {
+      var data = {};
+      async.waterfall([
+        function(cb) {
+          TreeModel.create({ name: 'A' }, function(err, catA) {
+            data.catA = catA;
+            cb(err, catA);
+          });
+        },
+        function(catA, cb) {
+          TreeModel.create({ parentId: catA._id, name: 'A1', _w: 3 }, function(err, catA1) {
+            data.catA1 = catA1;
+            cb(err, catA);
+          });
+        },
+        function(catA, cb) {
+          TreeModel.create({ parentId: catA._id, name: 'A2', _w: 2 }, function(err, catA2) {
+            data.catA2 = catA2;
+            cb(err, catA);
+          });
+        },
+        function(catA, cb) {
+          TreeModel.create({ parentId: catA._id, name: 'A3', _w: 1 }, function(err, catA3) {
+            data.catA3 = catA3;
+            cb(err);
+          });
+        },
+      ], function (err, results) {
+          TreeModel.findOne({ _id: data.catA._id }, function(err, root) {
+            assert.strictEqual(err, null);
+            root.getTree(function (err, tree) {
+              const keysList = Object.keys(tree[data.catA._id].children);
+              assert.strictEqual(keysList[0], data.catA3._id.toString());
+              assert.strictEqual(keysList[1], data.catA2._id.toString());
+              assert.strictEqual(keysList[2], data.catA1._id.toString());
+              done()
+            })
+        })
+      });
+    });
+
     it('should get array tree', function (done) {
         TreeModel.findOne({ parentId: null}, function(err, root) {
             assert.strictEqual(err, null)
@@ -242,6 +283,46 @@ describe('Matarialized test', function() {
             })
         })
     })
+
+    it('should get array tree, respect sorting (_w)', function (done) {
+      var data = {};
+      async.waterfall([
+        function(cb) {
+          TreeModel.create({ name: 'A' }, function(err, catA) {
+            data.catA = catA;
+            cb(err, catA);
+          });
+        },
+        function(catA, cb) {
+          TreeModel.create({ parentId: catA._id, name: 'A1', _w: 3 }, function(err, catA1) {
+            data.catA1 = catA1;
+            cb(err, catA);
+          });
+        },
+        function(catA, cb) {
+          TreeModel.create({ parentId: catA._id, name: 'A2', _w: 2 }, function(err, catA2) {
+            data.catA2 = catA2;
+            cb(err, catA);
+          });
+        },
+        function(catA, cb) {
+          TreeModel.create({ parentId: catA._id, name: 'A3', _w: 1 }, function(err, catA3) {
+            data.catA3 = catA3;
+            cb(err);
+          });
+        },
+      ], function (err, results) {
+          TreeModel.findOne({ _id: data.catA._id }, function(err, root) {
+            assert.strictEqual(err, null);
+            root.getArrayTree(function (err, tree) {
+              assert.strictEqual(tree[0].children[0].name, 'A3');
+              assert.strictEqual(tree[0].children[1].name, 'A2');
+              assert.strictEqual(tree[0].children[2].name, 'A1');
+              done()
+            })
+        })
+      });
+    });
 
     it('should get tree with root', function (done) {
         TreeModel.findOne({ parentId: null}, function(err, root) {
@@ -462,19 +543,19 @@ describe('Matarialized test', function() {
             });
           },
           function(catA, cb) {
-            TreeModel.create({ parentId: catA._id, name: 'A1' }, function(err, catA1) {
+            TreeModel.create({ parentId: catA._id, name: 'A1', _w: 3 }, function(err, catA1) {
               data.catA1 = catA1;
               cb(err, catA1);
             });
           },
           function(catA1, cb) {
-            TreeModel.create({ parentId: catA1._id, name: 'A2' }, function(err, catA2) {
+            TreeModel.create({ parentId: catA1._id, name: 'A2', _w: 2 }, function(err, catA2) {
               data.catA2 = catA2;
               cb(err, catA2);
             });
           },
           function(catA2, cb) {
-            TreeModel.create({ parentId: catA2._id, name: 'A3' }, function(err, catA3) {
+            TreeModel.create({ parentId: catA2._id, name: 'A3', _w: 1 }, function(err, catA3) {
               data.catA3 = catA3;
               cb(err);
             });
