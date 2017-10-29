@@ -378,6 +378,12 @@ Inspired by seamless data management.
 
 ### Changelog
 
+### Oct 28, 2017 - version: 0.2.0
+* fixed update children behavior. Thanks @selcukfatihsevinc
+* updated dependencies: mongoose 4.12.* , Async 2.5.*
+* added support nodejs 8.0
+* dropped support nodejs 0.6, 0.8
+
 ### Nov 10, 2016 - version: 0.1.9
 * fixed MongoDB 3.2 limit issue. Thanks @alexjamesbrown
 * fixed dependency: should package

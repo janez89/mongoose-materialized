@@ -621,7 +621,7 @@ describe('Matarialized test', function() {
     })
 
     it('should drop database', function(done){
-      db.connection.db.executeDbCommand({
+      db.connection.db.command({
         dropDatabase: 1
       }, function(err, result) {
         assert.strictEqual(err, null)
@@ -968,7 +968,7 @@ describe('Alternative tests', function() {
     })
 
     it('should drop database', function(done){
-      db.connection.db.executeDbCommand({
+      db.connection.db.command({
         dropDatabase: 1
       }, function(err, result) {
         assert.strictEqual(err, null)
